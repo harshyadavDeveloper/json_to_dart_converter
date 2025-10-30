@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar";
 import JsonToDartConverter from "./components/JsonToDartConverter";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import { Toaster } from 'react-hot-toast';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/about" element={<About />} />
           </Routes>
         </main>
+        <Toaster />
       </div>
     </Router>
   );
