@@ -16,9 +16,10 @@ export default function JsonToDartConverter() {
   };
 
   const handleFormatToggle = () => {
+    // Only validate JSON for formatting, not class name
     if (!json.trim()) {
       toast.error("Please paste some JSON first!");
-      return; // 🚫 stop toggle from changing
+      return;
     }
 
     if (!formatJson) {
@@ -36,11 +37,20 @@ export default function JsonToDartConverter() {
   };
 
   const handleConvert = () => {
-    if (!json.trim()) {
-      toast.error("Please enter JSON before converting!");
+    // Validate both fields when converting
+    if (!className.trim() || !json.trim()) {
+      const missing = [];
+      if (!className.trim()) missing.push("class name");
+      if (!json.trim()) missing.push("JSON");
+      toast.error(`Please provide: ${missing.join(" and ")}`);
       return;
     }
-    setDartCode(jsonToDart(json, className.trim() || "MyModel"));
+
+    try {
+      setDartCode(jsonToDart(json, className.trim() || "MyModel"));
+    } catch (error) {
+      toast.error(`Error converting JSON. Please check your input. Error: ${error.message}`);
+    }
   };
 
   const handleCopy = () => {
