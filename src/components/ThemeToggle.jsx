@@ -1,29 +1,69 @@
 import { useEffect, useState } from "react";
 
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "dark";
-  });
+const THEME_KEY = "theme"; // localStorage key
 
-  useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
+export default function ThemeToggle() {
+  // initialize using localStorage or system preference
+  const getInitial = () => {
+    try {
+      const stored = localStorage.getItem(THEME_KEY);
+      if (stored === "dark" || stored === "light") return stored;
+      // fallback to system preference
+      if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        return "dark";
+      }
+    } catch (e) {
+      // ignore localStorage errors (e.g., private mode)
+      console.error(`Error accessing localStorage: ${e.message}`);
     }
-    localStorage.setItem("theme", theme);
+    return "light";
+  };
+
+  const [theme, setTheme] = useState(getInitial);
+
+  // apply the theme to <html> and persist it
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (e) {
+      // ignore
+        console.error(`Error accessing localStorage: ${e.message}`);
+    }
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+  // keep theme in sync if user changes system preference while page open
+  useEffect(() => {
+    const mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+    if (!mq || !mq.addEventListener) return;
+    const handler = (e) => {
+      // only change if user hasn't explicitly set preference in localStorage
+      try {
+        const stored = localStorage.getItem(THEME_KEY);
+        if (!stored) setTheme(e.matches ? "dark" : "light");
+      } catch (err) {
+        // ignore
+        console.error(`Error accessing localStorage: ${err.message}`);
+      }
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
     <button
-      onClick={toggleTheme}
-      className="absolute top-5 right-5 px-3 py-2 text-sm rounded-md border border-gray-500 hover:border-blue-500 transition"
+      onClick={toggle}
+      aria-label="Toggle theme"
+      className="fixed top-4 right-4 z-50 flex items-center gap-2 px-3 py-2 rounded-md border bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 text-sm backdrop-blur-sm"
     >
-      {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+      {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
     </button>
   );
 }
