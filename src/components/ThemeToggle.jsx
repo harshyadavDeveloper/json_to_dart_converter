@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 
-const THEME_KEY = "theme"; // localStorage key
+const THEME_KEY = "theme"; 
 
 export default function ThemeToggle() {
-  // initialize using localStorage or system preference
   const getInitial = () => {
     try {
       const stored = localStorage.getItem(THEME_KEY);
@@ -13,7 +12,6 @@ export default function ThemeToggle() {
         return "dark";
       }
     } catch (e) {
-      // ignore localStorage errors (e.g., private mode)
       console.error(`Error accessing localStorage: ${e.message}`);
     }
     return "light";
@@ -21,7 +19,6 @@ export default function ThemeToggle() {
 
   const [theme, setTheme] = useState(getInitial);
 
-  // apply the theme to <html> and persist it
   useEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") {
@@ -37,17 +34,14 @@ export default function ThemeToggle() {
     }
   }, [theme]);
 
-  // keep theme in sync if user changes system preference while page open
   useEffect(() => {
     const mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
     if (!mq || !mq.addEventListener) return;
     const handler = (e) => {
-      // only change if user hasn't explicitly set preference in localStorage
       try {
         const stored = localStorage.getItem(THEME_KEY);
         if (!stored) setTheme(e.matches ? "dark" : "light");
       } catch (err) {
-        // ignore
         console.error(`Error accessing localStorage: ${err.message}`);
       }
     };
