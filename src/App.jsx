@@ -28,7 +28,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-white px-4 py-10 transition-colors duration-300">
-      {/* <ThemeToggle /> */}
+      <ThemeToggle />
 
       <h1 className="text-3xl font-bold mb-6 text-center">
         🧩 JSON → Dart Model Converter
