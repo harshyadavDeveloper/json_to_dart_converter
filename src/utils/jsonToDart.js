@@ -8,6 +8,7 @@ export function jsonToDart(jsonString, rootClassName = "MyModel") {
 
   const classDefs = [];
 
+  // 🔹 Convert to PascalCase (for class names)
   const toPascalCase = (str) =>
     str
       .replace(/([-_][a-z])/gi, (s) =>
@@ -15,14 +16,43 @@ export function jsonToDart(jsonString, rootClassName = "MyModel") {
       )
       .replace(/^\w/, (c) => c.toUpperCase());
 
+  // 🔹 Convert to camelCase (for field names)
+  const toCamelCase = (str) =>
+    str
+      .replace(/([-_][a-z])/gi, (s) =>
+        s.toUpperCase().replace("-", "").replace("_", "")
+      )
+      .replace(/^\w/, (c) => c.toLowerCase());
+
+  // 🔹 Sanitize invalid Dart identifiers (remove illegal chars, handle numbers)
+  const sanitizeIdentifier = (name) => {
+    let clean = name.replace(/[^a-zA-Z0-9_]/g, "");
+    if (/^[0-9]/.test(clean)) clean = "n" + clean;
+    if (!clean) clean = "field";
+    return clean;
+  };
+
   function generateClass(name, obj) {
     const className = toPascalCase(name);
     const fields = [];
     const fromJsonLines = [];
     const toJsonLines = [];
+    const usedNames = new Set(); // track duplicates
 
     for (const key in obj) {
       const value = obj[key];
+
+      // base name processing
+      let fieldName = toCamelCase(sanitizeIdentifier(key));
+
+      // 🔹 Handle duplicates by adding suffixes
+      let originalFieldName = fieldName;
+      let counter = 2;
+      while (usedNames.has(fieldName)) {
+        fieldName = `${originalFieldName}${counter++}`;
+      }
+      usedNames.add(fieldName);
+
       let fieldType = "dynamic";
       let assignFromJson = "";
       let assignToJson = "";
@@ -38,48 +68,48 @@ export function jsonToDart(jsonString, rootClassName = "MyModel") {
           fieldType = `List<${nestedClassName}>?`;
           assignFromJson = `
     if (json['${key}'] != null) {
-      ${key} = <${nestedClassName}>[];
+      ${fieldName} = <${nestedClassName}>[];
       json['${key}'].forEach((v) {
-        ${key}!.add(${nestedClassName}.fromJson(v));
+        ${fieldName}!.add(${nestedClassName}.fromJson(v));
       });
     }`;
           assignToJson = `
-    if (${key} != null) {
-      data['${key}'] = ${key}!.map((v) => v.toJson()).toList();
+    if (${fieldName} != null) {
+      data['${key}'] = ${fieldName}!.map((v) => v.toJson()).toList();
     }`;
         } else {
           fieldType = "List<dynamic>?";
-          assignFromJson = `${key} = json['${key}'];`;
-          assignToJson = `data['${key}'] = ${key};`;
+          assignFromJson = `${fieldName} = json['${key}'];`;
+          assignToJson = `data['${key}'] = ${fieldName};`;
         }
       } else if (typeof value === "object" && value !== null) {
         const nestedClassName = toPascalCase(key);
         generateClass(nestedClassName, value);
         fieldType = `${nestedClassName}?`;
-        assignFromJson = `${key} = json['${key}'] != null ? ${nestedClassName}.fromJson(json['${key}']) : null;`;
+        assignFromJson = `${fieldName} = json['${key}'] != null ? ${nestedClassName}.fromJson(json['${key}']) : null;`;
         assignToJson = `
-    if (${key} != null) {
-      data['${key}'] = ${key}!.toJson();
+    if (${fieldName} != null) {
+      data['${key}'] = ${fieldName}!.toJson();
     }`;
       } else if (typeof value === "string") {
         fieldType = "String?";
-        assignFromJson = `${key} = json['${key}'];`;
-        assignToJson = `data['${key}'] = ${key};`;
+        assignFromJson = `${fieldName} = json['${key}'];`;
+        assignToJson = `data['${key}'] = ${fieldName};`;
       } else if (typeof value === "number") {
         fieldType = "int?";
-        assignFromJson = `${key} = json['${key}'];`;
-        assignToJson = `data['${key}'] = ${key};`;
+        assignFromJson = `${fieldName} = json['${key}'];`;
+        assignToJson = `data['${key}'] = ${fieldName};`;
       } else if (typeof value === "boolean") {
         fieldType = "bool?";
-        assignFromJson = `${key} = json['${key}'];`;
-        assignToJson = `data['${key}'] = ${key};`;
+        assignFromJson = `${fieldName} = json['${key}'];`;
+        assignToJson = `data['${key}'] = ${fieldName};`;
       } else {
         fieldType = "dynamic";
-        assignFromJson = `${key} = json['${key}'];`;
-        assignToJson = `data['${key}'] = ${key};`;
+        assignFromJson = `${fieldName} = json['${key}'];`;
+        assignToJson = `data['${key}'] = ${fieldName};`;
       }
 
-      fields.push(`  ${fieldType} ${key};`);
+      fields.push(`  ${fieldType} ${fieldName};`);
       fromJsonLines.push(`    ${assignFromJson}`);
       toJsonLines.push(`    ${assignToJson}`);
     }
@@ -88,9 +118,7 @@ export function jsonToDart(jsonString, rootClassName = "MyModel") {
 class ${className} {
 ${fields.join("\n")}
 
-  ${className}({${Object.keys(obj)
-      .map((k) => `this.${k}`)
-      .join(", ")}});
+  ${className}({${[...usedNames].map((n) => `this.${n}`).join(", ")}});
 
   ${className}.fromJson(Map<String, dynamic> json) {
 ${fromJsonLines.join("\n")}
