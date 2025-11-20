@@ -50,7 +50,7 @@ export default function Home() {
           {
             title: "Text Compare (Coming Soon)",
             desc: "Compare two code snippets or text blocks visually.",
-            link: "#",
+            link: "/string-compare",
           },
         ].map((tool, i) => (
           <motion.div

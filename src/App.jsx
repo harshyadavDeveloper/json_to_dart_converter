@@ -5,6 +5,7 @@ import JsonToDartConverter from "./components/JsonToDartConverter";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import { Toaster } from 'react-hot-toast';
+import StringCompare from "./components/StringCompare";
 
 export default function App() {
   return (
@@ -20,6 +21,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/converter" element={<JsonToDartConverter />} />
+            <Route path="/string-compare" element={<StringCompare />} />
+
             <Route path="/about" element={<About />} />
           </Routes>
         </main>
