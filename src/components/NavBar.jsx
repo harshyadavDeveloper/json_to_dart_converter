@@ -29,6 +29,12 @@ export default function NavBar() {
           >
             Converter
           </Link>
+            <Link
+            to="/string-compare"
+            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+          >
+            String Compare
+          </Link>
           <Link
             to="/about"
             className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
