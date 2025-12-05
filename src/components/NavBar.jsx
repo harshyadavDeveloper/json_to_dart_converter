@@ -4,48 +4,58 @@ import ThemeToggle from "./ThemeToggle";
 
 export default function NavBar() {
   return (
-    <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-      {/* Left section — Logo + Links */}
-      <div className="flex items-center gap-8">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="font-bold text-xl text-blue-600 dark:text-blue-400 hover:opacity-90 transition"
-        >
-          JSON ↔ Dart
-        </Link>
+    <nav className="
+      sticky top-0 z-50
+      backdrop-blur-md bg-white/60 dark:bg-gray-950/60
+      border-b border-gray-200/60 dark:border-gray-800/60
+      shadow-sm
+    ">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        {/* Links closer to logo */}
-        <div className="flex items-center gap-5 text-gray-700 dark:text-gray-300 text-sm font-medium">
+        {/* Left Section */}
+        <div className="flex items-center gap-10">
+
+          {/* Logo */}
           <Link
             to="/"
-            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+            className="font-bold text-2xl text-blue-600 dark:text-blue-400 tracking-tight hover:opacity-90 transition"
           >
-            Home
+            JSON ↔ Dart
           </Link>
-          <Link
-            to="/converter"
-            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-          >
-            Converter
-          </Link>
-            <Link
-            to="/string-compare"
-            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-          >
-            String Compare
-          </Link>
-          <Link
-            to="/about"
-            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-          >
-            About
-          </Link>
-        </div>
-      </div>
 
-      {/* Right section — Theme Toggle */}
-      <ThemeToggle />
+          {/* Nav Links */}
+          <div className="flex items-center gap-8 text-gray-700 dark:text-gray-300 text-base font-medium">
+            <NavItem to="/" label="Home" />
+            <NavItem to="/converter" label="Converter" />
+            <NavItem to="/string-compare" label="String Compare" />
+            <NavItem to="/about" label="About" />
+          </div>
+        </div>
+
+        {/* Right Section */}
+        <ThemeToggle />
+      </div>
     </nav>
+  );
+}
+
+function NavItem({ to, label }) {
+  return (
+    <Link
+      to={to}
+      className="
+        relative group
+        hover:text-blue-600 dark:hover:text-blue-400 transition
+      "
+    >
+      {label}
+      {/* Modern bottom underline animation */}
+      <span
+        className="
+          absolute left-0 -bottom-1 h-[2px] w-0 bg-blue-600 dark:bg-blue-400
+          group-hover:w-full transition-all duration-300
+        "
+      />
+    </Link>
   );
 }
