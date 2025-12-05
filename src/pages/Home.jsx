@@ -45,7 +45,7 @@ export default function Home() {
           {
             title: "JSON Viewer (Coming Soon)",
             desc: "Format, view, and navigate complex JSON data.",
-            link: "#",
+            link: "/json-viewer",
           },
           {
             title: "Text Compare (Coming Soon)",
