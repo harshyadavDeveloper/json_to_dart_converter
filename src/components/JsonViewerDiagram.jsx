@@ -3,28 +3,34 @@ import ReactFlow, { Background, Controls } from "reactflow";
 import "reactflow/dist/style.css";
 import { jsonToFlow } from "../utils/jsonToFlow";
 import toast from "react-hot-toast";
+import { applyLayout } from "../utils/layout";
 
 export default function JsonDiagramViewer() {
   const [jsonInput, setJsonInput] = useState("");
   const [elements, setElements] = useState(null);
 
-  const generateDiagram = () => {
-    try {
-      const parsed = JSON.parse(jsonInput);
-      const { nodes, edges } = jsonToFlow(parsed);
 
-      // Auto-spread nodes (otherwise overlap)
-      const spacedNodes = nodes.map((node, i) => ({
-        ...node,
-        position: { x: (i % 5) * 250, y: Math.floor(i / 5) * 150 }
-      }));
 
-      setElements({ nodes: spacedNodes, edges });
-      toast.success("Diagram generated!");
-    } catch {
-      toast.error("Invalid JSON. Please fix and try again.");
-    }
-  };
+const generateDiagram = () => {
+  try {
+    const parsed = JSON.parse(jsonInput);
+
+    const { nodes, edges } = jsonToFlow(parsed);
+
+    // AUTO LAYOUT CLEAN TREE
+    const laidOut = applyLayout(nodes, edges, "TB");
+
+    setElements({
+      nodes: laidOut.nodes,
+      edges: laidOut.edges
+    });
+
+    toast.success("Diagram generated!");
+  } catch {
+    toast.error("Invalid JSON. Please fix and try again.");
+  }
+};
+
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-5xl">
