@@ -43,15 +43,21 @@ export default function Home() {
             link: "/converter",
           },
           {
-            title: "JSON Viewer (Coming Soon)",
+            title: "JSON Viewer",
             desc: "Format, view, and navigate complex JSON data.",
             link: "/json-viewer",
           },
           {
-            title: "Text Compare (Coming Soon)",
+            title: "Text Compare",
             desc: "Compare two code snippets or text blocks visually.",
             link: "/string-compare",
           },
+          {
+            title: "JWT Decoder",
+            desc: "Decode and inspect JWT tokens.",
+            link: "/jwt-decoder",
+          },
+
         ].map((tool, i) => (
           <motion.div
             key={i}
