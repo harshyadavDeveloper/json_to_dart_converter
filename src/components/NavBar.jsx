@@ -28,6 +28,7 @@ export default function NavBar() {
             <NavItem to="/" label="Home" />
             <NavItem to="/converter" label="Converter" />
             <NavItem to="/string-compare" label="String Compare" />
+            <NavItem to="/jwt-decoder" label="Jwt Decoder" />
             <NavItem to="/about" label="About" />
           </div>
         </div>
