@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import StringCompare from "./components/StringCompare";
 import JsonViewer from "./components/JsonViewerText";
 import JsonViewerTabs from "./components/JsonViewerTabs";
+import JwtDecoder from "./components/JwtDecoder";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/converter" element={<JsonToDartConverter />} />
             <Route path="/string-compare" element={<StringCompare />} />
             <Route path="/json-viewer" element={<JsonViewerTabs />} />
+            <Route path="/jwt-decoder" element={<JwtDecoder />} />
 
             <Route path="/about" element={<About />} />
           </Routes>
